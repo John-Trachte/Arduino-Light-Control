@@ -1,6 +1,11 @@
-This project uses GLFW 3. GLFW can be installed with the following commands:
+This project uses GLFW 3.3.6; GLFW can be installed with the following commands:
     sudo apt-get install libglfw3
     sudo apt-get install libglfw3-dev
 
+This project uses GLEW 2.1; GLEW can be installed with the following commands:
+    sudo apt-get install libglew-dev
+
+This project uses OpenGL 4.6.
+
 To properly build the project with the appropriate libraries, include the following linker options:
-    -lglfw -lGL
+    -lglfw -lGL -lGLEW
