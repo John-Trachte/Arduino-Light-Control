@@ -65,19 +65,39 @@ int main()
         -1.0f, 1.0f, 0.0f   // top left
     };
 
-    GLuint vbo = 0;
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    float colours[] = {
+      1.0f, 0.0f,  0.0f, // red
+      0.0f, 1.0f,  0.0f, // green
+      0.0f, 0.0f,  1.0f, // blue
+      0.0f, 0.0f,  1.0f, // blue
+      0.0f, 1.0f,  0.0f, // green
+      1.0f, 0.0f,  0.0f  // red
+    };
+
+    // points vertex boundary object
+    GLuint pvbo = 0;
+    glGenBuffers(1, &pvbo);
+    glBindBuffer(GL_ARRAY_BUFFER, pvbo);
     glBufferData(GL_ARRAY_BUFFER, 18 * sizeof(float), points, GL_STATIC_DRAW); // 18 float buffer
+
+    // colors vertex boundary object
+    GLuint cvbo = 0;
+    glGenBuffers(1, &cvbo);
+    glBindBuffer(GL_ARRAY_BUFFER, cvbo);
+    glBufferData(GL_ARRAY_BUFFER, 18 * sizeof(float), points, GL_STATIC_DRAW);
 
     // data for drawn object
     GLuint vao = 0;
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, pvbo);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL); // variables made from 3 floats
+    glBindBuffer(GL_ARRAY_BUFFER, cvbo);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL); // variables made from 3 floats
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
 
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL); // variables made from 3 floats
 
     const char* vertex_shader = readShader("Vertex.glsl");
 
