@@ -6,6 +6,3 @@ This project uses GLEW 2.1; GLEW can be installed with the following commands:
     sudo apt-get install libglew-dev
 
 This project uses OpenGL 4.6.
-
-To properly build the project with the appropriate libraries, include the following linker options:
-    -lglfw -lGL -lGLEW
