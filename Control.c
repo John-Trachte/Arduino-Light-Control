@@ -4,6 +4,19 @@
 #include <stdio.h>
 #include <string.h>
 
+static void cursorPosCallback(GLFWwindow* window, double x, double y)
+{
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+    printf("(%.0lf,%.0lf)\n", xpos, ypos);
+}
+
+void escapeCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+}
+
 char* readShader(const char* file)
 {
     FILE* fp; 
@@ -44,6 +57,10 @@ int main()
         glfwTerminate();
         return 1;
     }
+
+    // change built-in functions
+    glfwSetCursorPosCallback(window, cursorPosCallback);
+    glfwSetKeyCallback(window, escapeCallback);
 
     // allow use of OpenGL API
     glfwMakeContextCurrent(window);
@@ -115,6 +132,8 @@ int main()
     glAttachShader(shader_program, fs);
     glAttachShader(shader_program, vs);
     glLinkProgram(shader_program);
+
+    printf("Move the mouse to a part of the window to change the color of the LEDs connected to the Arduino.\n ** use the esc key to close the window **\n\n");    
 
     while(!glfwWindowShouldClose(window))
     {
