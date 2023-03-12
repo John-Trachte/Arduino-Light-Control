@@ -1,20 +1,18 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <pthread.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-static void cursorPosCallback(GLFWwindow* window, double x, double y)
-{
+struct location {
     double xpos, ypos;
-    glfwGetCursorPos(window, &xpos, &ypos);
-    printf("(%.0lf,%.0lf)\n", xpos, ypos);
-}
+} current;
 
-void escapeCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void* sendMessage(void* ptr)
 {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
+    struct location *current = (struct location*) ptr;
+    printf("(%.0lf,%.0lf)\n", current->xpos, current->ypos);
 }
 
 char* readShader(const char* file)
@@ -37,6 +35,31 @@ char* readShader(const char* file)
     fclose(fp);
 
     return shader;
+}
+
+static void cursorPosCallback(GLFWwindow* window, double x, double y)
+{
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+    current.xpos = xpos;
+    current.ypos = ypos;
+
+    pthread_t messenger;
+    int status;
+
+    status = pthread_create(&messenger, NULL, sendMessage, &current);
+    if(status != 0)
+    {
+        printf("thread failed\n");
+    } else {
+        pthread_join(messenger, NULL);
+    }
+}
+
+void escapeCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
 int main()
