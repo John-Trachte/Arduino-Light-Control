@@ -5,7 +5,7 @@
 .PHONY = all clean
 
 CC = gcc
-LINKERFLAGS = -lGL -lGLEW -lglfw
+LINKERFLAGS = -lGL -lGLEW -lglfw -lpthread
 
 all: Control.c
 	${CC} -o test Control.c ${LINKERFLAGS}
