@@ -1,6 +1,12 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#include <termios.h>
+#include <fcntl.h>
+#include <unistd.h>
+
 #include <pthread.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -8,6 +14,19 @@
 struct location {
     double xpos, ypos;
 } current;
+
+int serialOpen()
+{
+    char* device = "";
+
+    int port = open(device, O_RDWR | O_NOCTTY | O_NDELAY);
+    return port;
+}
+
+void serialClose(int* port)
+{
+    close(*port);
+}
 
 void* sendMessage(void* ptr)
 {
@@ -81,6 +100,19 @@ int main()
         return 1;
     }
 
+    // int port = serialOpen();
+    // if(port == -1)
+    // {
+    //     printf("Serial open failed\n");
+    //     glfwTerminate();
+    //     return 1;
+    // } else if(!isatty(port)) 
+    // {
+    //     printf("Port not a tty\n");
+    //     glfwTerminate();
+    //     return 1; 
+    // }
+
     // change built-in functions
     glfwSetCursorPosCallback(window, cursorPosCallback);
     glfwSetKeyCallback(window, escapeCallback);
@@ -106,12 +138,12 @@ int main()
     };
 
     float colours[] = {
-      1.0f, 0.0f,  0.0f, // red
-      0.0f, 1.0f,  0.0f, // green
-      0.0f, 0.0f,  1.0f, // blue
-      0.0f, 0.0f,  1.0f, // blue
-      0.0f, 1.0f,  0.0f, // green
-      1.0f, 0.0f,  0.0f  // red
+        1.0f, 0.0f,  0.0f, // red
+        0.0f, 1.0f,  0.0f, // green
+        0.0f, 0.0f,  1.0f, // blue
+        0.0f, 0.0f,  1.0f, // blue
+        0.0f, 1.0f,  0.0f, // green
+        1.0f, 0.0f,  0.0f  // red
     };
 
     // points vertex boundary object
@@ -170,6 +202,7 @@ int main()
         glfwSwapBuffers(window);
     }
 
+    // serialClose(&port);
     glfwTerminate();
 
     return 0;
