@@ -17,7 +17,7 @@ struct location {
 
 int serialOpen()
 {
-    char* device = "";
+    char* device = "/dev/ttyACM0";
 
     int port = open(device, O_RDWR | O_NOCTTY | O_NDELAY);
     return port;
@@ -100,18 +100,18 @@ int main()
         return 1;
     }
 
-    // int port = serialOpen();
-    // if(port == -1)
-    // {
-    //     printf("Serial open failed\n");
-    //     glfwTerminate();
-    //     return 1;
-    // } else if(!isatty(port)) 
-    // {
-    //     printf("Port not a tty\n");
-    //     glfwTerminate();
-    //     return 1; 
-    // }
+    int port = serialOpen();
+    if(port == -1)
+    {
+        printf("Serial open failed\n");
+        glfwTerminate();
+        return 1;
+    } else if(!isatty(port)) 
+    {
+        printf("Port not a tty\n");
+        glfwTerminate();
+        return 1; 
+    }
 
     // change built-in functions
     glfwSetCursorPosCallback(window, cursorPosCallback);
@@ -202,7 +202,7 @@ int main()
         glfwSwapBuffers(window);
     }
 
-    // serialClose(&port);
+    serialClose(&port);
     glfwTerminate();
 
     return 0;
