@@ -6,3 +6,7 @@ This project uses GLEW 2.1; GLEW can be installed with the following commands:
     sudo apt-get install libglew-dev
 
 This project uses OpenGL 4.6.
+
+This project was built using an Arduino Uno. It can be built using other devices, given "char* device" in Control.c int openSerial() is changed appropriately.
+
+This project was built in Ubuntu Linux 22.04. Error messages and troubleshooting steps may differ depending on the user's system.
