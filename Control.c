@@ -1,12 +1,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
 #include <termios.h>
 #include <fcntl.h>
 #include <unistd.h>
-
 #include <pthread.h>
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -103,13 +100,14 @@ int main()
     int port = serialOpen();
     if(port == -1)
     {
-        printf("Serial open failed\n");
+        printf("Serial open failed\n1) ensure you are in the dialout group for access to serial ports \n  $ sudo usermod -a -G dialout <username>\n  restart computer\n2) check that the device is properly connected\n\n");
         glfwTerminate();
         return 1;
     } else if(!isatty(port)) 
     {
         printf("Port not a tty\n");
         glfwTerminate();
+        serialClose(&port);
         return 1; 
     }
 
