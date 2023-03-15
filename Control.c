@@ -8,28 +8,61 @@
 #include <stdio.h>
 #include <string.h>
 
+
 struct location {
     double xpos, ypos;
+    int serial;
 } current;
+
 
 int serialOpen()
 {
+    struct termios config;
+
     char* device = "/dev/ttyACM0";
 
     int port = open(device, O_RDWR | O_NOCTTY | O_NDELAY);
+
+    if(port == -1)
+    {
+        printf("Serial open failed\n1) ensure you are in the dialout group for access to serial ports \n  $ sudo usermod -a -G dialout <username>\n  restart computer\n2) check that the device is properly connected\n\n");
+        glfwTerminate();
+        exit(1);
+    } else if(!isatty(port)) 
+    {
+        printf("Port not a tty\n");
+        glfwTerminate();
+        exit(1);
+    } else if(tcgetattr(port, &config) < 0)
+    {
+        printf("Could not get terminal attributes\n");
+        glfwTerminate();
+        exit(1);
+    }
+
+    if(cfsetospeed(&config, B9600) < 0)
+    {
+        printf("Invallid baud rate");
+        glfwTerminate();
+        exit(1);
+    }
+
     return port;
 }
+
 
 void serialClose(int* port)
 {
     close(*port);
 }
 
+
 void* sendMessage(void* ptr)
 {
     struct location *current = (struct location*) ptr;
     printf("(%.0lf,%.0lf)\n", current->xpos, current->ypos);
 }
+
 
 char* readShader(const char* file)
 {
@@ -53,6 +86,7 @@ char* readShader(const char* file)
     return shader;
 }
 
+
 static void cursorPosCallback(GLFWwindow* window, double x, double y)
 {
     double xpos, ypos;
@@ -72,11 +106,13 @@ static void cursorPosCallback(GLFWwindow* window, double x, double y)
     }
 }
 
+
 void escapeCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
+
 
 int main()
 {
@@ -98,18 +134,7 @@ int main()
     }
 
     int port = serialOpen();
-    if(port == -1)
-    {
-        printf("Serial open failed\n1) ensure you are in the dialout group for access to serial ports \n  $ sudo usermod -a -G dialout <username>\n  restart computer\n2) check that the device is properly connected\n\n");
-        glfwTerminate();
-        return 1;
-    } else if(!isatty(port)) 
-    {
-        printf("Port not a tty\n");
-        glfwTerminate();
-        serialClose(&port);
-        return 1; 
-    }
+    current.serial = port;
 
     // change built-in functions
     glfwSetCursorPosCallback(window, cursorPosCallback);
