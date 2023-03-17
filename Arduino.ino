@@ -2,24 +2,48 @@ void setup()
 {
   Serial.begin(9600);
   
-  pinMode(3, OUTPUT);
-  pinMode(5, OUTPUT);
-  pinMode(6, OUTPUT);
-  pinMode(9, OUTPUT);
+  pinMode(3, OUTPUT); // green,   top left
+  pinMode(5, OUTPUT); // yellow,  top right
+  pinMode(6, OUTPUT); // blue,    bottom left
+  pinMode(9, OUTPUT); // red,     bottom right
 }
 
-int greenScale = 1, yellowScale = 1, blueScale = 1, redScale = 1;
-
+char color;
 
 void loop()
 {
-    greenScale = Serial.read();
-    yellowScale = Serial.read();
-  	blueScale = Serial.read();
-    redScale = Serial.read();
 
-    analogWrite(3, (greenScale * 255) / 1000);
-    analogWrite(5, (yellowScale * 255) / 1000);
-    analogWrite(6, (blueScale * 255) / 1000);
-    analogWrite(9, (redScale * 255)  / 1000);
+}
+
+void serialEvent(){
+  color = Serial.read();
+  switch(color) {
+    case 'G':
+      analogWrite(3, 255);
+      analogWrite(5, 0);
+      analogWrite(6, 0);
+      analogWrite(9, 0);
+    break;
+
+    case 'B':
+      analogWrite(3, 0);
+      analogWrite(5, 0);
+      analogWrite(6, 255);
+      analogWrite(9, 0);
+    break;
+
+    case 'Y':
+      analogWrite(3, 0);
+      analogWrite(5, 255);
+      analogWrite(6, 0);
+      analogWrite(9, 0);
+    break;
+
+    case 'R':
+      analogWrite(3, 0);
+      analogWrite(5, 0);
+      analogWrite(6, 0);
+      analogWrite(9, 255);
+    break;    
+  }
 }
