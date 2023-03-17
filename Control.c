@@ -11,6 +11,7 @@
 
 struct location {
     double xpos, ypos;
+    int width, height;
     int serial;
 } current;
 
@@ -60,7 +61,30 @@ void serialClose(int* port)
 void* sendMessage(void* ptr)
 {
     struct location *current = (struct location*) ptr;
-    printf("(%.0lf,%.0lf)\n", current->xpos, current->ypos);
+    
+    // change coords into a percentage of the screen
+    double sendX = (current->xpos / current->width);
+    double sendY = current->ypos / current->height;
+
+    char send;
+    if(sendX < 0.5)
+    {
+        if(sendY < 0.5)
+        {
+            send = 'G';
+        } else {
+            send = 'B';
+        }
+    } else {
+        if(sendY < 0.5)
+        {
+            send = 'Y';
+        } else {
+            send = 'R';
+        }
+    }
+
+    write(current->serial, &send, sizeof(char));    
 }
 
 
@@ -126,7 +150,9 @@ int main()
     const GLFWvidmode* mon = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
     // create window 1/4 screen area
-    GLFWwindow* window = glfwCreateWindow(mon->width / 2, mon->height / 2, "Light control", NULL, NULL);
+    int windowWidth = mon->width / 2;
+    int windowHeight = mon->height / 2;
+    GLFWwindow* window = glfwCreateWindow(mon->width / 2, windowHeight, "Light control", NULL, NULL);
     if(!window) {
         printf("GLFW window failed\n");
         glfwTerminate();
@@ -135,6 +161,8 @@ int main()
 
     int port = serialOpen();
     current.serial = port;
+    current.width = windowWidth;
+    current.height = windowHeight;
 
     // change built-in functions
     glfwSetCursorPosCallback(window, cursorPosCallback);
